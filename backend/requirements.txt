@@ -1,0 +1,28 @@
+# Web Framework
+fastapi==0.162.0
+uvicorn[standard]==0.54.0
+
+# Validation & Settings
+pydantic==2.10.3
+pydantic-settings==2.6.1
+
+# Firebase Admin (auth verification)
+firebase-admin==6.6.0
+
+# AI Client (pointed at Vultr Serverless Inference)
+openai==1.57.0
+
+# Docker SDK (sandbox management)
+docker==7.1.0
+
+# CSV / Data Processing — versions compatible with Python 3.14
+pandas>=3.0.0
+numpy>=2.0.0
+chardet==5.2.0
+
+# File Upload
+python-multipart==0.0.20
+aiofiles==24.1.0
+
+# Environment
+python-dotenv==1.0.1

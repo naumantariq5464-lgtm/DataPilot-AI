@@ -1,0 +1,51 @@
+# ─── Python ───────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ─── Virtual Environments ─────────────────────
+venv/
+.venv/
+env/
+.env/
+
+# ─── Environment Variables ────────────────────
+.env
+backend/.env
+frontend/.env
+frontend/.env.local
+
+# ─── Firebase Credentials ─────────────────────
+firebase-service-account.json
+backend/firebase-service-account.json
+**/*service-account*.json
+
+# ─── Node / Frontend ──────────────────────────
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# ─── OS Files ─────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── IDE ──────────────────────────────────────
+.vscode/settings.json
+.idea/
+
+# ─── Temp / Sandbox Files ─────────────────────
+/tmp/
+*.tmp
+
+# Accidental empty shell artifacts
+/[[]internal]
+/CACHED
+/docker
+/exporting

@@ -1,0 +1,773 @@
+================================================================================
+DATAPILOT AI — COMPLETE PROJECT SPECIFICATION
+Vultr Agent Rush Hackathon | Challenge #01 — Blast Radius Zero
+================================================================================
+
+PROJECT IDENTITY
+================
+Project Name:    DataPilot AI
+Project Type:    AI-Powered Autonomous Data Analysis Platform
+Hackathon:       Vultr Agent Rush Hackathon
+Challenge:       #01 — Blast Radius Zero
+Pattern:         Pattern A — Sandboxed Code Execution
+Budget:          $200 USD Vultr Hackathon Credits
+
+CORE CONCEPT
+============
+DataPilot AI is an AI-powered autonomous data analysis platform that allows
+users to upload CSV datasets and analyze them through natural language
+instructions.
+
+Users can ask questions such as:
+  - Analyze this dataset and identify important trends.
+  - Show me the correlation between different columns.
+  - Find missing values and unusual patterns.
+  - Generate visualizations for sales performance.
+  - Calculate statistical summaries.
+  - Identify outliers and anomalies.
+
+The AI generates Python analysis code, executes it inside an isolated Docker
+sandbox, analyzes the execution results, and presents understandable insights
+and visualizations.
+
+Goal: Make advanced data analysis accessible without requiring users to write
+Python code.
+
+================================================================================
+SECTION 1 — DOCUMENTATION ANALYSIS REQUIREMENTS
+================================================================================
+
+Before writing, modifying, or generating application code:
+  - Read planning/docs/doc.txt completely from beginning to end.
+  - Understand every requirement, architectural decision, feature, security rule,
+    technology, and development phase.
+
+Key areas to understand:
+  - Project vision and objectives
+  - Target users and problems solved
+  - Functional and non-functional requirements
+  - Frontend and backend architecture
+  - AI code-generation workflow
+  - Vultr Serverless Inference integration
+  - Docker sandbox execution
+  - Firebase authentication
+  - CSV upload and processing
+  - Pandas and NumPy integration
+  - Dynamic visualization system
+  - Execution results and error handling
+  - Security requirements
+  - Deployment architecture
+  - Testing and hackathon submission requirements
+
+Do not start application implementation before completing this analysis.
+
+================================================================================
+SECTION 2 — PROJECT ARCHITECTURE
+================================================================================
+
+COMPONENT OVERVIEW
+------------------
+All system components must communicate cohesively:
+
+  [User Browser]
+       |
+       v
+  [React Frontend]  <----->  [FastAPI Backend]
+                                    |
+                         +----------+----------+
+                         |          |          |
+                    [Firebase]  [Vultr AI]  [Docker Sandbox]
+                    [Auth]      [Inference]  [Python Exec]
+                         |
+                    [Temporary File Storage]
+
+FRONTEND
+--------
+Technology: React
+Responsibilities:
+  - Responsive dashboard
+  - CSV upload interface
+  - AI conversational analysis interface
+  - Data preview
+  - Visualization dashboard
+  - Execution history
+  - Analysis results display
+
+BACKEND
+-------
+Technology: Python + FastAPI
+Architecture: REST API
+Responsibilities:
+  - Firebase token verification
+  - CSV validation and processing
+  - AI inference integration (Vultr)
+  - Python code validation
+  - Docker sandbox management
+  - Result processing
+  - Temporary file management
+  - API endpoint security
+
+AI INTEGRATION
+--------------
+Provider: Vultr Serverless Inference (NOT OpenAI directly)
+Client Library: OpenAI SDK (used as HTTP client only, pointed at Vultr endpoint)
+
+CRITICAL REQUIREMENTS:
+  - Use Vultr-hosted inference instead of OpenAI API
+  - Keep inference credentials exclusively on the backend
+  - Send user prompts + dataset metadata to the AI model
+  - Generate executable Python data-analysis code
+  - Generate code that produces structured results and visualization data
+  - Support controlled error analysis and retries
+  - Return understandable explanations to users
+  - Do NOT introduce another paid AI provider without explicit approval
+
+SANDBOX
+-------
+Technology: Docker
+Execution Model: Isolated container per analysis run
+
+Security requirements:
+  - Dedicated sandbox Docker image
+  - Non-root execution (no root privileges)
+  - CPU restrictions
+  - Memory restrictions
+  - Process count restrictions
+  - Execution timeout enforcement
+  - Network restrictions (no external network access)
+  - Restricted filesystem access
+  - Automatic container cleanup after execution
+
+CRITICAL: Never execute AI-generated code inside the FastAPI process.
+
+================================================================================
+SECTION 3 — UI/UX DESIGN SYSTEM (MANDATORY)
+================================================================================
+
+THEME
+-----
+Primary Theme: Black and White Minimalist
+
+Design Direction:
+  - Clean and uncluttered
+  - Minimalist layouts
+  - Professional appearance
+  - Modern SaaS dashboard feel
+  - Enterprise-grade quality
+  - Data-focused interface
+  - Consistent spacing and typography
+
+COLOR PALETTE
+-------------
+Element                 | Color   | Hex
+------------------------|---------|----------
+Main background         | White   | #FFFFFF
+Primary text            | Black   | #111111
+Secondary text          | Gray    | #666666
+Primary buttons         | Black   | #111111
+Button text             | White   | #FFFFFF
+Borders                 | Light   | #E5E5E5
+Card background         | White   | #FFFFFF
+Sidebar background      | Off-wht | #FAFAFA
+Muted background        | Light   | #F5F5F5
+
+AVOID:
+  - Colorful gradients
+  - Unnecessary decorative colors
+  - Excessive shadows
+  - Unnecessary animations
+  - Cluttered interfaces
+  - Random color combinations
+
+Use: Subtle borders, consistent spacing, clean typography, restrained hover effects.
+
+Note: Charts may use distinct, accessible data-series colors where necessary
+to distinguish datasets, while maintaining the overall monochrome application
+identity.
+
+RESPONSIVE DESIGN
+-----------------
+The complete application must be responsive and support:
+  - Desktop (1440px+)
+  - Laptop (1024px–1439px)
+  - Tablet (768px–1023px)
+  - Mobile (320px–767px)
+
+Requirements:
+  - Responsive sidebar (collapsible on mobile)
+  - Mobile navigation (hamburger menu)
+  - Flexible dashboard grids
+  - Responsive charts
+  - Properly scaled tables
+  - Responsive upload components
+  - No horizontal overflow at any breakpoint
+  - Consistent spacing across screen sizes
+
+Do NOT design only for desktop and add mobile responsiveness later.
+
+MAIN APPLICATION LAYOUT
+-----------------------
+Professional dashboard containing:
+  1. Sidebar navigation
+  2. Top navigation / header bar
+  3. Main content area
+  4. Dataset information panel
+  5. Analysis workspace
+  6. Visualization section
+  7. Execution history
+
+Navigation Items:
+  - Overview
+  - New Analysis
+  - My Datasets
+  - Analysis History
+  - Settings
+
+Keep interface focused on the primary task: analyzing data.
+
+================================================================================
+SECTION 4 — DYNAMIC DATA VISUALIZATION SYSTEM
+================================================================================
+
+Data visualization is one of the most important features of DataPilot AI.
+Do NOT implement only one generic chart type.
+
+The platform must intelligently generate different visualizations according to:
+  - The dataset content
+  - Selected columns
+  - Data types (numeric, categorical, temporal)
+  - The specific analysis request
+
+SUPPORTED CHART TYPES
+---------------------
+  1.  Bar Chart
+  2.  Horizontal Bar Chart
+  3.  Line Chart
+  4.  Area Chart
+  5.  Pie Chart
+  6.  Donut Chart
+  7.  Scatter Plot
+  8.  Histogram
+  9.  Box Plot
+  10. Heatmap
+  11. Correlation Matrix
+  12. Grouped Bar Chart
+
+INTELLIGENT CHART SELECTION EXAMPLES
+-------------------------------------
+  - Sales over time            → Line Chart
+  - Sales by category          → Bar Chart
+  - Market share               → Pie or Donut Chart
+  - Age distribution           → Histogram
+  - Price vs. quantity         → Scatter Plot
+  - Numerical relationships    → Correlation Heatmap
+  - Outlier detection          → Box Plot
+
+VISUALIZATION REQUIREMENTS
+--------------------------
+  - Support multiple charts in one analysis response
+  - Generate charts dynamically based on analysis output
+  - Use appropriate, descriptive chart titles
+  - Display axis labels on all applicable charts
+  - Display legends where needed
+  - Provide interactive tooltips
+  - Support responsive chart layouts
+  - Handle missing or invalid data gracefully
+  - Avoid misleading visualizations
+  - Display meaningful empty states when no data
+
+Every analysis must produce visualizations relevant to the user's actual
+request. Never display the same predefined charts regardless of the request.
+
+================================================================================
+SECTION 5 — AI ANALYSIS WORKFLOW (COMPLETE)
+================================================================================
+
+Step-by-step workflow that must be fully implemented:
+
+  1.  User uploads a CSV file via the frontend.
+  2.  Backend validates the file (format, size, encoding, structure).
+  3.  Dataset metadata and preview are generated (columns, dtypes, shape, sample rows).
+  4.  User submits a natural-language analysis request.
+  5.  Backend prepares the AI prompt (includes metadata + user request).
+  6.  Vultr Serverless Inference generates Python analysis code.
+  7.  Backend validates the generated code (syntax check, safety scan).
+  8.  Code + dataset file are sent to the isolated Docker sandbox.
+  9.  Sandbox executes the analysis in isolation.
+  10. Results and generated visualization artifacts are collected from sandbox output.
+  11. Backend validates and structures the results (JSON format).
+  12. Frontend displays insights, statistics, and charts.
+  13. If execution fails, the error is captured and analyzed.
+  14. AI may generate a corrected version through controlled retries (max retries limit).
+  15. Final results (success or graceful failure) are presented to the user.
+
+The workflow must remain traceable and properly handle failures at every stage.
+
+================================================================================
+SECTION 6 — PERSISTENT PROJECT CONTEXT MANAGEMENT
+================================================================================
+
+File: planning/docs/context.md
+
+This file maintains the project's technical understanding and development history.
+
+Required sections:
+
+A. PROJECT UNDERSTANDING
+   - Purpose, Vision, Target Users, Problems Solved, Complete Workflow
+
+B. TECHNOLOGY STACK
+   - Every technology and its specific responsibility
+
+C. ARCHITECTURE
+   - Frontend, Backend, AI Inference, Firebase, Docker, Database communication
+
+D. FOLDER STRUCTURE
+   - Actual project structure (updated as files are created)
+
+E. DEVELOPMENT PROGRESS
+   - Completed tasks
+   - In Progress tasks
+   - Pending tasks
+   - Blocked tasks
+
+F. IMPLEMENTATION DETAILS (per feature)
+   - Feature name
+   - Files created
+   - Files modified
+   - Main responsibilities
+   - Important functions
+   - API endpoints
+   - Dependencies
+   - Integration details
+   - Testing status
+
+G. SECURITY IMPLEMENTATION
+   - Only security features that have been actually implemented and verified
+
+H. CURRENT DEVELOPMENT STATE
+   - Working features
+   - Incomplete features
+   - Known bugs
+   - Configuration requirements
+   - Pending integrations
+   - Current development phase
+   - Exact next task
+
+I. ARCHITECTURAL DECISIONS
+   - Important decisions and their reasoning
+
+================================================================================
+SECTION 7 — MANDATORY CONTEXT UPDATE RULES
+================================================================================
+
+Whenever you implement or modify anything:
+  1. Read the relevant context (context.md + source files)
+  2. Inspect existing source code
+  3. Implement required changes
+  4. Run relevant tests
+  5. Record all created files
+  6. Record all modified files
+  7. Update development progress
+  8. Record unresolved issues
+  9. Update the exact next development task
+
+Rules:
+  - Never claim a feature is completed without testing it
+  - doc.txt is the project specification (source of truth for requirements)
+  - context.md is the actual implementation and progress record
+  - Source code is always ground truth if documentation conflicts with implementation
+
+================================================================================
+SECTION 8 — STRICT SECURITY REQUIREMENTS
+================================================================================
+
+Security is a core architectural requirement, not an afterthought.
+
+NEVER:
+  - Hardcode API credentials anywhere in code
+  - Commit .env files to version control
+  - Expose backend secrets to the frontend
+  - Send secrets to the Docker sandbox
+  - Execute untrusted AI-generated code in the FastAPI process
+  - Run privileged Docker containers
+  - Mount Docker socket inside the sandbox
+  - Allow unrestricted filesystem access from sandbox
+  - Allow unrestricted network access from sandbox
+
+ALWAYS:
+  - Apply CPU limits to sandbox containers
+  - Apply memory limits to sandbox containers
+  - Apply process count limits to sandbox containers
+  - Apply execution time limits (timeout)
+  - Run sandbox code as a non-root user
+  - Validate all uploads (format, size, encoding, content)
+  - Validate all generated code artifacts before sandbox submission
+  - Clean up temporary containers immediately after use
+  - Clean up temporary files after processing
+  - Verify user ownership before accessing private datasets
+  - Protect all API endpoints with authentication and authorization
+
+Do not mark any security requirement as implemented without actual verification.
+
+================================================================================
+SECTION 9 — CODE QUALITY STANDARDS
+================================================================================
+
+Throughout all development phases:
+
+  - Write clean, readable, maintainable code
+  - Follow modular architecture (separate concerns properly)
+  - Use meaningful variable, function, and class names
+  - Apply Python type hints throughout backend code
+  - Use Pydantic models for request/response validation
+  - Avoid duplicate code (DRY principle)
+  - Avoid unused imports
+  - Avoid unnecessary dependencies
+  - Avoid unnecessary abstractions
+  - Handle all exceptions properly with meaningful error messages
+  - Maintain consistent formatting (Black for Python, Prettier for JS/TS)
+  - Follow the documented folder structure
+
+Never compromise security for convenience.
+
+================================================================================
+SECTION 10 — DEVELOPMENT WORKFLOW RULES
+================================================================================
+
+For every development task:
+  1.  Read context.md
+  2.  Inspect existing implementation
+  3.  Understand dependencies
+  4.  Identify required changes
+  5.  Implement only necessary changes
+  6.  Run relevant tests
+  7.  Fix identified issues
+  8.  Update context.md
+  9.  Report completed work
+  10. Identify the next task
+
+  - Do not overwrite working code without understanding its purpose
+  - Do not silently skip failed tests
+  - Do not generate unnecessary files to make the project look complete
+
+================================================================================
+SECTION 11 — FUTURE SESSION CONTINUITY
+================================================================================
+
+When development continues in a new session:
+  1. Read planning/docs/context.md first
+  2. Identify the last completed task
+  3. Understand the current architecture
+  4. Inspect relevant source files
+  5. Identify the next pending task
+  6. Continue from that exact point
+
+Do NOT restart the project or repeat completed work.
+
+If an error occurs:
+  - Investigate its actual root cause
+  - Inspect source files, configuration, dependencies, imports, API contracts,
+    and execution flow
+  - Fix the root cause, not the symptom
+  - Update context.md after fixing
+
+================================================================================
+SECTION 12 — COMPLETE DEVELOPMENT ROADMAP
+================================================================================
+
+PHASE 1 — Project Understanding & Planning
+  - Read complete documentation
+  - Analyze all requirements
+  - Understand complete architecture
+  - Identify technical challenges
+  - Create context.md
+  - Create initial roadmap
+  Status: IN PROGRESS
+
+PHASE 2 — Project Foundation
+  - Backend project setup (FastAPI, folder structure, dependencies)
+  - Frontend project setup (React, folder structure, dependencies)
+  - Environment configuration (.env templates, config files)
+  - Firebase authentication (project setup, backend verification, frontend SDK)
+  - Basic API integration (health check, CORS, middleware)
+  Status: PENDING
+
+PHASE 3 — Dataset Management
+  - CSV upload endpoint
+  - File validation (format, size, encoding, column detection)
+  - Dataset preview generation (first N rows, column info)
+  - Metadata extraction (dtypes, shape, null counts, basic stats)
+  - Secure temporary storage management
+  Status: PENDING
+
+PHASE 4 — Vultr AI Integration
+  - Configure Vultr Serverless Inference connection
+  - Implement AI service module
+  - Design code-generation system prompts
+  - Generate Python analysis code from natural language
+  - Validate and parse model responses
+  Status: PENDING
+
+PHASE 5 — Docker Sandbox
+  - Create sandbox Dockerfile
+  - Build sandbox image with required Python libraries
+  - Implement sandbox execution manager
+  - Apply all resource restrictions (CPU, memory, PIDs, network)
+  - Capture stdout/stderr from container
+  - Implement automatic container cleanup
+  Status: PENDING
+
+PHASE 6 — Data Analysis Engine
+  - Pandas integration within sandbox
+  - NumPy integration within sandbox
+  - Statistical analysis functions
+  - Missing value detection and reporting
+  - Correlation analysis
+  - Outlier detection (IQR, Z-score methods)
+  Status: PENDING
+
+PHASE 7 — Dynamic Visualization
+  - Implement chart data generation in sandbox (JSON output)
+  - Integrate frontend chart library (Recharts or Chart.js)
+  - Support all 12 chart types
+  - Implement dynamic chart layout (multiple charts per response)
+  - Handle visualization errors gracefully
+  Status: PENDING
+
+PHASE 8 — AI Error Recovery
+  - Capture sandbox execution errors
+  - Send controlled error context back to AI
+  - Generate corrected Python code
+  - Apply retry limits (max 2-3 retries)
+  - Verify final execution result
+  Status: PENDING
+
+PHASE 9 — Dashboard & User Experience
+  - Overview dashboard (stats, recent analyses)
+  - Analysis workspace (chat-style interface)
+  - Dataset management page (upload, list, delete)
+  - Analysis history page
+  - Responsive layouts for all breakpoints
+  - Black and White design system implementation
+  Status: PENDING
+
+PHASE 10 — Security & Testing
+  - Authentication flow testing
+  - Upload validation testing
+  - Sandbox isolation testing
+  - Resource limit testing
+  - API security testing (auth, ownership)
+  - Integration testing (full workflow)
+  - Error handling testing
+  Status: PENDING
+
+PHASE 11 — Vultr Deployment
+  - Configure production environment variables
+  - Deploy backend on Vultr VM (Compute instance)
+  - Deploy frontend (static hosting or Vultr Object Storage)
+  - Configure Vultr Serverless Inference endpoint
+  - Test complete production workflow end-to-end
+  Status: PENDING
+
+PHASE 12 — Hackathon Submission
+  - Final end-to-end testing
+  - README and documentation
+  - Architecture diagram
+  - Demo video preparation
+  - Deployment verification
+  - Submit per hackathon requirements
+  Status: PENDING
+
+================================================================================
+SECTION 13 — TECHNOLOGY STACK DETAILS
+================================================================================
+
+FRONTEND
+--------
+  Framework:        React 18+
+  Language:         JavaScript / TypeScript
+  Styling:          Tailwind CSS (utility-first, consistent with design system)
+  Charts:           Recharts (primary) — supports all required chart types
+  HTTP Client:      Axios
+  Auth:             Firebase SDK (client-side)
+  State:            React Context API or Zustand (lightweight)
+  Build Tool:       Vite
+
+BACKEND
+-------
+  Framework:        FastAPI (Python 3.11+)
+  Language:         Python
+  Validation:       Pydantic v2
+  Auth Verification: firebase-admin SDK
+  CSV Processing:   pandas, python-csv
+  Docker Control:   docker SDK for Python
+  AI Client:        openai SDK (pointed at Vultr endpoint)
+  File Handling:    python-multipart, aiofiles
+  Environment:      python-dotenv
+  Server:           Uvicorn
+
+AI / INFERENCE
+--------------
+  Provider:         Vultr Serverless Inference
+  Access Method:    OpenAI-compatible API (same SDK, different base_url)
+  Model:            TBD (Vultr-hosted LLM — e.g., llama-based or similar)
+  Credentials:      Backend-only (never exposed to frontend or sandbox)
+
+SANDBOX
+-------
+  Technology:       Docker
+  Base Image:       python:3.11-slim
+  Libraries:        pandas, numpy, scipy, matplotlib (for data generation)
+  Execution User:   Non-root (uid 1000)
+  Resource Limits:  CPU: 0.5 cores, Memory: 256MB, PIDs: 50
+  Timeout:          30 seconds
+  Network:          Disabled (--network none)
+  Output Format:    JSON written to stdout
+
+AUTHENTICATION
+--------------
+  Provider:         Firebase Authentication
+  Method:           Email/Password + Google OAuth
+  Token:            Firebase ID Token (JWT)
+  Verification:     Backend verifies token on every protected request
+  Frontend:         Firebase JS SDK
+
+STORAGE
+-------
+  Temporary Files:  Local filesystem (backend /tmp or configurable path)
+  Production:       Vultr Object Storage (S3-compatible) for persistent datasets
+  Database:         Firebase Firestore (user data, analysis history, dataset metadata)
+
+DEPLOYMENT
+----------
+  Backend:          Vultr Cloud Compute VM (Ubuntu 22.04)
+  Frontend:         Vultr Object Storage (static site) or VM-served
+  AI Inference:     Vultr Serverless Inference (managed)
+  Container Reg.:   Docker Hub or Vultr Container Registry
+
+================================================================================
+SECTION 14 — FOLDER STRUCTURE SPECIFICATION
+================================================================================
+
+datapilot-ai/
+├── planning/
+│   └── docs/
+│       ├── doc.txt           # This file — project specification
+│       └── context.md        # Living implementation progress document
+│
+├── backend/
+│   ├── app/
+│   │   ├── main.py           # FastAPI app entry point
+│   │   ├── config.py         # Environment config (Pydantic Settings)
+│   │   ├── dependencies.py   # Shared FastAPI dependencies
+│   │   ├── routers/
+│   │   │   ├── auth.py       # Auth endpoints (token verification)
+│   │   │   ├── datasets.py   # CSV upload and management
+│   │   │   └── analysis.py   # Analysis request and result endpoints
+│   │   ├── services/
+│   │   │   ├── ai_service.py      # Vultr inference integration
+│   │   │   ├── sandbox_service.py # Docker sandbox management
+│   │   │   ├── dataset_service.py # CSV validation and processing
+│   │   │   └── firebase_service.py # Firebase admin integration
+│   │   ├── models/
+│   │   │   ├── dataset.py    # Pydantic models for datasets
+│   │   │   ├── analysis.py   # Pydantic models for analysis
+│   │   │   └── user.py       # Pydantic models for users
+│   │   └── utils/
+│   │       ├── code_validator.py  # AI-generated code safety checks
+│   │       └── file_utils.py     # Temp file management helpers
+│   ├── sandbox/
+│   │   ├── Dockerfile        # Sandbox image definition
+│   │   └── runner.py         # Script executed inside sandbox
+│   ├── tests/
+│   │   ├── test_upload.py
+│   │   ├── test_analysis.py
+│   │   └── test_sandbox.py
+│   ├── .env.example          # Environment variable template
+│   └── requirements.txt      # Python dependencies
+│
+├── frontend/
+│   ├── src/
+│   │   ├── main.tsx          # React entry point
+│   │   ├── App.tsx           # Root component with routing
+│   │   ├── components/
+│   │   │   ├── layout/
+│   │   │   │   ├── Sidebar.tsx
+│   │   │   │   ├── Header.tsx
+│   │   │   │   └── Layout.tsx
+│   │   │   ├── upload/
+│   │   │   │   └── CSVUpload.tsx
+│   │   │   ├── analysis/
+│   │   │   │   ├── AnalysisInput.tsx
+│   │   │   │   ├── AnalysisResult.tsx
+│   │   │   │   └── ExecutionHistory.tsx
+│   │   │   ├── charts/
+│   │   │   │   ├── ChartRenderer.tsx
+│   │   │   │   └── chartTypes/  (individual chart components)
+│   │   │   └── common/
+│   │   │       ├── Button.tsx
+│   │   │       ├── Card.tsx
+│   │   │       └── LoadingSpinner.tsx
+│   │   ├── pages/
+│   │   │   ├── Overview.tsx
+│   │   │   ├── NewAnalysis.tsx
+│   │   │   ├── MyDatasets.tsx
+│   │   │   ├── AnalysisHistory.tsx
+│   │   │   └── Settings.tsx
+│   │   ├── services/
+│   │   │   ├── api.ts         # Axios instance + interceptors
+│   │   │   └── firebase.ts    # Firebase SDK setup
+│   │   ├── hooks/
+│   │   │   ├── useAuth.ts
+│   │   │   └── useAnalysis.ts
+│   │   ├── store/             # Global state (Context or Zustand)
+│   │   └── types/             # TypeScript type definitions
+│   ├── public/
+│   ├── index.html
+│   ├── vite.config.ts
+│   ├── tailwind.config.js
+│   └── package.json
+│
+├── .gitignore
+└── README.md
+
+================================================================================
+SECTION 15 — CRITICAL CLARIFICATIONS
+================================================================================
+
+1. VULTR INFERENCE:
+   The OpenAI SDK is used ONLY as an HTTP client library.
+   All actual AI requests go to Vultr Serverless Inference endpoints.
+   The base_url of the OpenAI client is set to the Vultr inference URL.
+   No OpenAI credits are used.
+
+2. DOCKER SANDBOX:
+   AI-generated Python code is ALWAYS executed inside a Docker container.
+   NEVER inside the FastAPI process.
+   The container is ephemeral — created fresh, used, then destroyed.
+
+3. CHARTS:
+   Every analysis produces DIFFERENT charts based on:
+   - The specific user request
+   - The data types present in the dataset
+   - The columns involved in the analysis
+   Multiple chart types may appear in a single analysis response.
+   Never show the same static chart regardless of the question.
+
+4. BUDGET:
+   $200 USD in Vultr credits available.
+   Spend efficiently:
+   - Vultr Serverless Inference: per-token billing
+   - Vultr Compute VM: hourly billing (shut down when not needed during dev)
+   - Vultr Object Storage: per-GB billing
+   Monitor usage regularly.
+
+5. PHASE-BY-PHASE DEVELOPMENT:
+   Do NOT build everything at once.
+   Follow the 12-phase roadmap strictly.
+   Each phase must be completed and tested before starting the next.
+
+================================================================================
+END OF SPECIFICATION
+================================================================================
