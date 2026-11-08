@@ -2,144 +2,67 @@
 
 **Upload. Ask. Analyze. Understand.**
 
-DataPilot AI is an AI-powered data analysis platform that transforms raw CSV datasets into meaningful, actionable insights through natural-language queries.
-
-It enables users to analyze data simply by uploading a CSV file and asking questions in plain English, without requiring Python, SQL, or advanced spreadsheet skills.
+DataPilot AI is an AI-powered data analysis platform that transforms CSV files into actionable insights through natural-language queries. Users can upload datasets, ask questions in plain English, and receive AI-generated analysis, statistics, tables, and visualizations.
 
 ## Live Application
 
-- **Project URL:** http://65.20.95.233
-- **Platform:** Vultr Cloud Compute
+**Demo:** http://65.20.95.233
 
-## How We Used Vultr
+## How Vultr Was Used
 
-DataPilot AI is built and deployed using Vultr infrastructure and AI services.
+Vultr powers both the application infrastructure and AI capabilities of DataPilot AI.
 
-- **Vultr Cloud Compute:** A Vultr virtual machine hosts the backend and frontend in a production environment.
-- **Vultr AI Inference:** Powers natural-language understanding and Python code generation.
-- **DeepSeek Model:** `deepseek-v4.1-flash-1017` interprets user questions and generates data analysis code through Vultr AI Inference.
-- **Docker Sandbox:** AI-generated Python code runs inside an isolated Docker container, separate from the main application environment.
-- **Nginx:** Delivers the frontend and routes API requests to the backend.
+- **Vultr Cloud Compute:** Created and configured an Ubuntu virtual machine to host the application.
+- **Application Deployment:** Deployed the frontend and backend on the Vultr server.
+- **Vultr AI Inference:** Used Vultr's AI inference service to access the DeepSeek model for generating data-analysis code.
+- **Docker Sandbox:** Executed AI-generated Python code inside an isolated Docker environment to reduce execution risks.
+- **Nginx:** Configured as the web server and reverse proxy to serve the frontend and route API requests to the backend.
 
-Vultr provides the cloud infrastructure and AI inference capabilities that power DataPilot AI.
+## AI Model
+
+DataPilot AI uses **DeepSeek V4.1 Flash (`deepseek-v4.1-flash-1017`)** through Vultr AI Inference.
+
+The model interprets users' natural-language questions and generates Python code to analyze uploaded datasets.
 
 ## Data Pipeline
 
-1. **CSV Upload:** The user uploads a dataset to the platform.
-2. **Data Processing:** The backend validates the CSV and prepares the dataset for analysis.
-3. **Natural Language Query:** The user asks a question about the uploaded data.
-4. **AI Understanding:** DeepSeek, accessed through Vultr AI Inference, interprets the user's request.
-5. **Python Code Generation:** The AI generates Python code based on the user's analytical requirements.
+1. **CSV Upload:** The user uploads a CSV dataset through the web interface.
+2. **Data Validation:** The backend validates the uploaded file and prepares the dataset.
+3. **Natural-Language Query:** The user asks a question about the data.
+4. **AI Processing:** The backend sends the question and relevant dataset information to DeepSeek through Vultr AI Inference.
+5. **Code Generation:** DeepSeek generates Python code for the requested analysis.
 6. **Code Validation:** The backend validates the generated code before execution.
-7. **Sandbox Execution:** The code runs inside an isolated Docker environment using Python and Pandas.
-8. **Result Processing:** Structured analysis results, statistics, and chart data are returned to the application.
-9. **Visualization:** The frontend displays understandable insights, tables, statistics, and relevant charts.
+7. **Sandbox Execution:** The code runs inside an isolated Docker container using Python and Pandas.
+8. **Results:** The application returns analysis results, statistics, tables, and visualizations to the user.
 
 ## Key Features
 
-- CSV dataset upload and analysis
-- Natural-language analytics in simple English
-- AI-powered Python code generation using DeepSeek via Vultr AI Inference
-- Isolated code execution inside a Docker sandbox
-- Dynamic calculations based on dataset columns and user questions
-- Statistical insights including totals, averages, rankings, comparisons, and aggregations
-- Interactive visualizations with relevant charts and graphs
-- Readable analytical results
-- Responsive web interface
+- Upload and analyze CSV datasets.
+- Ask questions using natural language.
+- AI-powered Python code generation.
+- Secure, isolated Docker-based code execution.
+- Automated data analysis and statistical summaries.
+- Interactive charts and visualizations.
+- Structured analysis results.
+- User-friendly interface for non-technical users.
+- Responsive web application.
 
 ## Technology Stack
 
-| Category | Technologies |
-| --- | --- |
-| Frontend | React.js, TypeScript, Vite |
+| Component | Technology |
+|---|---|
+| Frontend | React, TypeScript, Vite |
 | Backend | Python, FastAPI |
-| AI Inference | Vultr AI Inference |
-| AI Model | DeepSeek V4.1 Flash (`deepseek-v4.1-flash-1017`) |
-| Data Analysis | Python, Pandas, NumPy |
+| AI Model | DeepSeek V4.1 Flash |
+| AI Infrastructure | Vultr AI Inference |
+| Data Analysis | Pandas |
 | Code Execution | Docker |
 | Web Server | Nginx |
-| Cloud Infrastructure | Vultr Cloud Compute |
-| API Communication | REST API |
-
-## Application Architecture
-
-```text
-React Frontend
-    -> FastAPI Backend
-    -> Vultr AI Inference (DeepSeek)
-    -> Code Validation
-    -> Docker Sandbox
-    -> Pandas Analysis
-    -> Structured Results
-    -> Interactive Visualizations
-```
-
-## Project Structure
-
-```text
-.
-├── backend/       # FastAPI API, AI integration, validation, and sandbox execution
-├── frontend/      # React + TypeScript web application
-├── planning/      # Project planning documents
-└── README.md
-```
-
-## Local Development
-
-### Prerequisites
-
-- Python 3.12 or newer
-- Node.js 18 or newer
-- Docker
-- A Vultr AI Inference API key
-- Firebase credentials for authentication
-
-### Backend
-
-```bash
-cd backend
-python -m venv .venv
-
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-
-# macOS/Linux
-# source .venv/bin/activate
-
-pip install -r requirements.txt
-copy .env.example .env
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-Update `backend/.env` with the required deployment values before starting the backend.
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-The frontend development server runs on the Vite default port, usually `http://localhost:5173`.
-
-### Production Build
-
-```bash
-cd frontend
-npm run build
-```
-
-For production deployments, Nginx serves the frontend build and proxies API requests to FastAPI.
-
-## Security
-
-Environment files and Firebase service-account JSON credentials are intentionally excluded from version control. Never commit API keys, private credentials, or other secrets. Use `backend/.env.example` as the configuration template.
+| Hosting | Vultr Cloud Compute |
+| Communication | REST API |
 
 ## Project Vision
 
-Our vision is to make data analytics accessible to everyone by removing the technical barriers associated with traditional data analysis.
+DataPilot AI aims to make data analysis accessible to everyone. Instead of writing complex Python scripts or SQL queries, users can simply upload their datasets and ask questions in natural language.
 
-DataPilot AI transforms the way people interact with data: instead of writing code or complex queries, users can simply ask questions and explore their datasets through AI-powered analysis.
-
-**DataPilot AI — Upload. Ask. Analyze. Understand.**
+By combining Vultr Cloud Compute, Vultr AI Inference, DeepSeek, and isolated Docker execution, DataPilot AI provides an accessible and practical approach to AI-powered data analysis.
